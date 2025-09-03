@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password        String
+  name            String
+  role            String    @default("reader") // reader, author, admin
+  emailVerified   Boolean   @default(false)
+  verificationToken String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  orders          Order[]
+  reviews         Review[]
+  authorProfile   AuthorProfile?
+  downloads       Download[]
+}
+
+model AuthorProfile {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id])
+  bio             String?
+  age             Int?
+  educationLevel  String?
+  specialization  String?
+  verified        Boolean   @default(false)
+  books           Book[]
+  createdAt       DateTime  @default(now())
+}
+
+model Book {
+  id              String    @id @default(cuid())
+  title           String
+  subtitle        String?
+  description     String
+  authorId        String
+  author          AuthorProfile @relation(fields: [authorId], references: [id])
+  
+  // Educational focus
+  gradeLevel      String    // K-12, Advanced, University
+  subject         String    // Mathematics, Science, Literature, etc.
+  difficulty      String    // Beginner, Intermediate, Advanced, Genius
+  ageGroup        String    // 5-7, 8-10, 11-13, 14-16, 16+
+  
+  // Pricing
+  price           Float     @default(0) // 0 for free books
+  isFree          Boolean   @default(false)
+  
+  // Files
+  coverImage      String?
+  pdfUrl          String?
+  epubUrl         String?
+  previewPdfUrl   String?   // Sample pages
+  audioBookUrl    String?
+  videoPromoUrl   String?
+  
+  // Metadata
+  isbn            String?   @unique
+  pageCount       Int?
+  language        String    @default("English")
+  tags            String    // comma-separated tags
+  featured        Boolean   @default(false)
+  published       Boolean   @default(false)
+  publishedAt     DateTime?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  orders          Order[]
+  reviews         Review[]
+  downloads       Download[]
+}
+
+model Order {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  bookId          String
+  book            Book      @relation(fields: [bookId], references: [id])
+  
+  amount          Float
+  format          String    // pdf, epub, both
+  status          String    @default("pending") // pending, paid, failed
+  
+  stripeSessionId String?
+  stripePaymentIntentId String?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Download {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  bookId          String
+  book            Book      @relation(fields: [bookId], references: [id])
+  
+  format          String    // pdf, epub
+  token           String    @unique
+  expiresAt       DateTime
+  downloaded      Boolean   @default(false)
+  downloadedAt    DateTime?
+  
+  createdAt       DateTime  @default(now())
+}
+
+model Review {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  bookId          String
+  book            Book      @relation(fields: [bookId], references: [id])
+  
+  rating          Int       // 1-5
+  comment         String
+  verified        Boolean   @default(false) // verified purchase
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Submission {
+  id              String    @id @default(cuid())
+  name            String
+  email           String
+  age             Int
+  educationLevel  String
+  
+  bookTitle       String
+  bookDescription String
+  subject         String
+  gradeLevel      String
+  
+  manuscriptUrl   String?
+  status          String    @default("pending") // pending, reviewing, accepted, rejected
+  reviewNotes     String?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
