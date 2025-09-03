@@ -13,7 +13,7 @@ import {
 import { HiSparkles } from 'react-icons/hi';
 
 // Mock data - in production this would come from API/database
-const bookData = {
+const bookData: Record<string, any> = {
   '1': {
     id: '1',
     title: 'Quantum Physics Made Simple',
