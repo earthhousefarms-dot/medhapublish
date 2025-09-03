@@ -344,7 +344,7 @@ export default function BookDetail() {
                 <div className="mb-6">
                   <h3 className="text-xl font-bold mb-3">Key Features</h3>
                   <ul className="space-y-2">
-                    {book.features.map((feature, index) => (
+                    {book.features.map((feature: string, index: number) => (
                       <li key={index} className="flex items-start">
                         <FaCheckCircle className="text-blue-600 mt-1 mr-2" />
                         <span className="text-gray-700">{feature}</span>
@@ -391,7 +391,7 @@ export default function BookDetail() {
           <div className="mt-8 bg-white rounded-xl shadow-lg p-8">
             <h3 className="text-2xl font-bold mb-6">Customer Reviews</h3>
             <div className="space-y-4">
-              {book.reviews.map((review) => (
+              {book.reviews.map((review: any) => (
                 <div key={review.id} className="border-b border-gray-200 pb-4">
                   <div className="flex items-start justify-between mb-2">
                     <div>
